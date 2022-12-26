@@ -35,4 +35,5 @@ class Student(models.Model):
     updated_at = models.DateTimeField('UpdatedAt',auto_now=True)
     student_class = models.ForeignKey(StudentClass, on_delete=models.CASCADE)
     def __str__(self):
-        return self.firstname
+        abc = str(self.student_roll)
+        return abc
