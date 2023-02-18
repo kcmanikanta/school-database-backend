@@ -32,6 +32,10 @@ SECRET_KEY = 'django-insecure-8x-z$subsdhlw0mo$c=6g#yyb_s0zt_3-t*e$hcsc#$bmt7-5i
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
+
+
 
 
 # Application definition
@@ -44,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_filters',
     'apps.users',
     'apps.admission',
     'cloudinary',
@@ -51,9 +56,11 @@ INSTALLED_APPS = [
     'apps.subjects',
     'apps.students',
     'apps.results',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -153,3 +160,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': DEFAULT_PAGE_SIZE
 }
+
+
+

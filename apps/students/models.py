@@ -21,6 +21,7 @@ class Student(models.Model):
     class Meta:
         db_table = 'Students'
     student_roll = models.IntegerField(unique=True,blank=False,null=False)
+    udise_code = models.IntegerField('UDISE_CODE', blank=True, null=True)
     title = models.CharField('title', max_length=20, choices=title)
     firstname = models.CharField('First Name',max_length=100,  db_index=True, blank=False, null = False )
     lastname = models.CharField('Last Name',max_length=100,  db_index=True, blank=False, null = False )
@@ -32,6 +33,28 @@ class Student(models.Model):
     gaurdian = models.CharField('Gaurdian Name',max_length=100, db_index=True, blank=True, null = True )
     adhaar = models.IntegerField('Aadhar', blank = False, null = False)
     domicile = models.IntegerField('Domicile Number', blank = False, null = False)
+    bank= models.IntegerField('Bank Account',null=True,blank=True)
+    photograph = CloudinaryField(
+        'Photo', blank = True, null = True
+    )
+    dob = models.DateField(
+        'Date of Birth', blank=True, null=True
+    )
+    category = models.CharField(
+        'Category', blank=True, null=True, default='ST',max_length=100
+    )
+    signature = CloudinaryField(
+        'Signature', blank = True, null = True
+    )
+    town = models.CharField(
+        'Town', blank=True, null=True, default='Anantnag' ,max_length=100
+    )
+    tehsil = models.CharField(
+        'Tehsil', blank=True, null=True, default='Srigufwara',max_length=100
+    )
+    district = models.CharField(
+        'District', blank=True, null=True, default='Anantnag',max_length=100
+    )
     created_at = models.DateTimeField('CreatedAt', blank = False,auto_now_add=True)
     updated_at = models.DateTimeField('UpdatedAt',auto_now=True)
     student_class = models.ForeignKey(StudentClass, on_delete=models.CASCADE)
