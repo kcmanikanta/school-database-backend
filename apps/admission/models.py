@@ -43,5 +43,5 @@ class Admission_form(models.Model):
     updated_at = models.DateTimeField('UpdatedAt',auto_now=True)
 
     def __str__(self):
-        return self.Name
+        return self.firstname
 

@@ -32,7 +32,7 @@ class Student(models.Model):
     mother = models.CharField('Mother Name',max_length=100, db_index=True, blank=True, null = True )
     gaurdian = models.CharField('Gaurdian Name',max_length=100, db_index=True, blank=True, null = True )
     adhaar = models.IntegerField('Aadhar', blank = False, null = False)
-    domicile = models.IntegerField('Domicile Number', blank = False, null = False)
+    domicile = models.IntegerField('Domicile Number', blank = True, null = True)
     bank= models.IntegerField('Bank Account',null=True,blank=True)
     photograph = CloudinaryField(
         'Photo', blank = True, null = True
@@ -55,8 +55,11 @@ class Student(models.Model):
     district = models.CharField(
         'District', blank=True, null=True, default='Anantnag',max_length=100
     )
-    created_at = models.DateTimeField('CreatedAt', blank = False,auto_now_add=True)
-    updated_at = models.DateTimeField('UpdatedAt',auto_now=True)
+    address = models.CharField(
+        'Address', blank=True, null=True, default='Kasnard-Khiram',max_length=100
+    )
+    created_at = models.DateField('CreatedAt', blank = False,auto_now_add=True)
+    updated_at = models.DateTimeField('UpdatedAt',auto_now=True , blank=True,null=True)
     student_class = models.ForeignKey(StudentClass, on_delete=models.CASCADE)
     # result = models.ForeignKey(DeclareResult,related_name='related_results',on_delete= models.CASCADE)
     def __str__(self):
