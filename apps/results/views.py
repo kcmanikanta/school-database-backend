@@ -18,7 +18,7 @@ class StudentMarksView(APIView):
                 subject_marks[mark.subject.subject_name] = mark.marks
             if  subject_marks != {} :
                 data.append({
-                    "name": student.firstname,
+                    "name": student.firstname + ' '+student.lastname,
                     "Admission No": student.student_roll,
                     "class": student.student_class.class_name,
                     "subjects": subject_marks
