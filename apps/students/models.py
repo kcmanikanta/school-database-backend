@@ -61,7 +61,6 @@ class Student(models.Model):
     created_at = models.DateField('CreatedAt', blank = False,auto_now_add=True)
     updated_at = models.DateTimeField('UpdatedAt',auto_now=True , blank=True,null=True)
     student_class = models.ForeignKey(StudentClass, on_delete=models.CASCADE)
-    # result = models.ForeignKey(DeclareResult,related_name='related_results',on_delete= models.CASCADE)
     def __str__(self):
         return self.firstname
 
@@ -70,7 +69,3 @@ class Student(models.Model):
     def student_details(self):
         self.related_student.all()
 
-
-# class StudentMarks(models.Model):
-#     marks = models.IntegerField('Marks', db_index=True, blank=True, null=True)
-#     subject = models.ForeignKey(Subject, on_delete=models.DO_NOTHING)
