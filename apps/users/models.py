@@ -1,33 +1,32 @@
 from django.db import models
+
 # Create your models here.
 
 
 class User(models.Model):
     class Meta(object):
         db_table = 'user'
+
     user_name = models.CharField(
-        'Username', blank=False, null=False, db_index=True, max_length=50
-    )
-    employee_id = models.CharField(
-        'Employee ID', blank=True, null=True, max_length=100, db_index=True
+        'User Name', blank=False, null=False, max_length=50, db_index=True
     )
     password = models.CharField(
-        'Password', blank=False, null=False, db_index=True, max_length=255
+        'Password', blank=False, null=False, max_length=500, db_index=True
     )
     email = models.EmailField(
-        'Email', blank=False, null=False, db_index=True, max_length=100
+        'email', blank=False, null=False, max_length=254, db_index=True
     )
     token = models.CharField(
-        'Token', blank=False, null=False, max_length=500
+        'token', blank=True, null=True, max_length=500, db_index=True
     )
     token_expires_at = models.DateTimeField(
-        'Token Expires at', blank=False, null=False, max_length=50
+        'Token Expires Datetime', blank=True, null=True, 
     )
     created_at = models.DateTimeField(
-        'Created Datetime', blank=False, auto_now_add=True
+        'Created Datetime', blank=True, auto_now_add=True
     )
     updated_at = models.DateTimeField(
-        'Updated Datetime', blank=False, auto_now=True
+        'Updated Datetime', blank=True, auto_now=True
     )
 
     def __str__(self):
