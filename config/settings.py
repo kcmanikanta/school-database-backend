@@ -47,7 +47,12 @@ INSTALLED_APPS = [
     'apps.users', 
     'cloudinary',
     'django_filters',
-    "apps.attendance"
+    "apps.attendance",
+    'apps.admission',
+    'apps.results',
+    'apps.students',
+    'apps.student_classes',
+    'apps.subjects',
 ]
 
 MIDDLEWARE = [
@@ -152,9 +157,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 cloudinary.config( 
-  cloud_name = "dvcqt0fz8", 
-  api_key = "243225333468536", 
-  api_secret = "3tMxz9KOgjODXfLgG5td-i3b7wI" 
+  cloud_name = "dj6bt46ar", 
+  api_key = "482644941478895", 
+  api_secret = "P59cUQUPZohjRtasaz0R3gL0w-s" 
 )
 
 REST_FRAMEWORK = {
