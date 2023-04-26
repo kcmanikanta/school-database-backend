@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.response import Response
-from .serializers import AttendanceSerializer
+from .serializers import AttendanceSerializer, AttendanceReportSerializer
 from apps.users.mixins import CustomLoginRequiredMixin
 from .models import Attendance
 from django_filters import rest_framework as filters
@@ -26,16 +26,27 @@ class AttendnaceFilter(filters.FilterSet):
         model = Attendance
         fields = {
             'user':['exact'],
-            'status':['exact'],
-            'location':['exact']
-
         }
 
 
-class AttendanceReportView(generics.ListAPIView):
-    serializer_class = AttendanceSerializer
+class AttendanceReportView(CustomLoginRequiredMixin, generics.ListAPIView):
+    
+    serializer_class = AttendanceReportSerializer
     queryset = Attendance.objects.all()
     filter_backends=[filters.DjangoFilterBackend,search.SearchFilter ]
     filterset_class = AttendnaceFilter
+    search_fields = ['user','email']
+
+    def get(self, request, *args, **kwrgs):
+        queryset = self.get_queryset().filter(user=request.login_user.id)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
+
+class AttendanceAdminView(generics.ListAPIView):
+    
+    serializer_class = AttendanceReportSerializer
+    queryset = Attendance.objects.all()
+    filter_backends=[filters.DjangoFilterBackend,search.SearchFilter ]
+    filterset_class = AttendnaceFilter
