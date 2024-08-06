@@ -21,6 +21,15 @@ class AttendanceView(CustomLoginRequiredMixin, generics.CreateAPIView):
         return Response(serializer.data)
 
 
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()  # create a mutable copy of the request data
+        data["user"] = request.login_user.id  # set the user field to the user ID
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+
 class AttendnaceFilter(filters.FilterSet):
     class Meta:
         model = Attendance

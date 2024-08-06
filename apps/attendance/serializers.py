@@ -9,6 +9,17 @@ class AttendanceSerializer(serializers.ModelSerializer):
         model = Attendance
         fields = '__all__'
 
+    def create(self, validated_data):
+        request = self.context.get('request')
+        image = request.FILES.get('photo')
+        attendance = Attendance.objects.create(
+            user=validated_data['user'],
+            status=validated_data['status'],
+            location=validated_data['location'],
+            imageUrl=image
+        )
+        return attendance
+
 
 class AttendanceReportSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source='user.user_name', read_only=True)
