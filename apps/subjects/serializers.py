@@ -1,15 +1,20 @@
 from rest_framework import serializers
-from .models import Subject
-# from apps.results.serializers import MarksSerializer
-from apps.results.models import DeclareResult
+from .models import SubjectCombination, Subject, StudentClass
 
-class MarksSerializer(serializers.ModelSerializer):
+class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
-        model = DeclareResult
-        fields = ('marks')
-# class SubjectSerializer(serializers.ModelSerializer):
-#     # marks = MarksSerializer(read_only=True,source='results_marks',many=True)
-#     class Meta:
-#         model = Subject
-#         fields = ('subject_name','subject_code','results')
-        # depth=1
+        model = Subject
+        fields = ('subject_name', 'subject_code')
+
+class StudentClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentClass
+        fields = ('class_name',)
+
+class SubjectCombinationSerializer(serializers.ModelSerializer):
+    select_subject = SubjectSerializer()
+    select_class = StudentClassSerializer()
+
+    class Meta:
+        model = SubjectCombination
+        fields = ('select_subject', 'select_class')

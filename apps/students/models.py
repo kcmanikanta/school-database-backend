@@ -19,7 +19,7 @@ gender = (
 # Create your models here.
 class Student(models.Model):
     class Meta:
-        db_table = 'Students'
+     db_table = 'Students'
     student_roll = models.IntegerField(unique=True,blank=False,null=False)
     udise_code = models.IntegerField('UDISE_CODE', blank=True, null=True)
     title = models.CharField('title', max_length=20, choices=title)

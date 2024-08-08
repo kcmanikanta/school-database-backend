@@ -1,5 +1,5 @@
-# from django.contrib import admin
-# from .models import DeclareResult
+from django.contrib import admin
+from .models import DeclareResult
 
-# # Register your models here.
-# admin.site.register(DeclareResult)
+# Register your models here.
+admin.site.register(DeclareResult)

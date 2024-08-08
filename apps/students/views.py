@@ -17,7 +17,6 @@ class StudentFilter(filters.FilterSet):
             'id':['exact'],
             'student_roll':['exact'],
             'student_class':['exact']
-
         }
 
 class StudentsAdd(generics.CreateAPIView):

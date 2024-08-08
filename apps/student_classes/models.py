@@ -4,9 +4,7 @@ from django.urls import reverse
 
 
 class StudentClass(models.Model):
-
-    class_name = models.CharField(
-        max_length=100, primary_key=True, help_text='Eg- Third, Fouth,Sixth etc')
+    class_name = models.CharField(max_length=100, primary_key=True, help_text='Eg- Third, Fouth,Sixth etc')
     section = models.CharField(max_length=10, help_text='Eg- A,B,C etc')
     creation_date = models.DateTimeField(auto_now=False, auto_now_add=True)
 
