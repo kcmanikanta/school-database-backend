@@ -25,7 +25,7 @@ class Student(models.Model):
     title = models.CharField('title', max_length=20, choices=title)
     firstname = models.CharField('First Name',max_length=100,  db_index=True, blank=False, null = False )
     lastname = models.CharField('Last Name',max_length=100,  db_index=True, blank=False, null = False )
-    email = models.EmailField('Email',max_length=500, blank=False, null=False)
+    email = models.EmailField('Email',max_length=500, blank=True, null=True)
     phone = models.IntegerField('Phone', blank=False, null=False)
     gender = models.CharField('Gender', max_length=50, blank=False, null=False, choices=gender)
     father = models.CharField('Father Name',max_length=100, db_index=True, blank=True, null = True )

@@ -48,3 +48,23 @@ class StudentsList(generics.ListAPIView):
 class StudentUpdate(generics.UpdateAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentListSerializer
+    
+    
+class AdminStudentAddView(generics.CreateAPIView):
+    queryset = Student.objects.all()
+    serializer_class = StudentAddSerializer
+
+    def post(self, request, *args, **kwargs):
+        roll = request.data.get('student_roll')
+        if roll:
+            if Student.objects.filter(student_roll=roll).exists():
+                response = Response(
+                    {'error': 'Student with this Roll Number already exists'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                response.accepted_renderer = JSONRenderer()
+                response.accepted_media_type = "application/json"
+                response.renderer_context = {}
+                return response
+        
+        return self.create(request, *args, **kwargs)
