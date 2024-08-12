@@ -3,7 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from apps.students.models import Student
 from .models import DeclareResult
-from .serializers import ResultAddSerializer
+from .serializers import ResultAddSerializer 
+from rest_framework.exceptions import NotFound
 
 class addResult(generics.CreateAPIView):
     queryset = DeclareResult.objects.all()
@@ -40,6 +41,7 @@ class StudentMarksView(APIView):
 
             if subject_marks:
                 data.append({
+                    "id": student.id,
                     "name": student.firstname + ' ' + student.lastname,
                     "Admission No": student.student_roll,
                     "class": student.student_class.class_name,
@@ -48,3 +50,23 @@ class StudentMarksView(APIView):
                     "total_possible": total_possible
                 })
         return Response(data, status=status.HTTP_200_OK)
+
+class ResultView(APIView):
+    def post(self, request):
+        serializer = ResultAddSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"message": "Results added successfully."}, status=status.HTTP_201_CREATED)
+
+    def put(self, request):
+        serializer = ResultAddSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        updated_results = serializer.save() 
+        
+        
+        result_data = ResultAddSerializer(updated_results, many=True).data
+        return Response({"message": "Results updated successfully.", "results": result_data}, status=status.HTTP_200_OK)
+
+
+
+

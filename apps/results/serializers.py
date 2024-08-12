@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import DeclareResult, Subject, StudentClass
+from .models import DeclareResult, Subject, StudentClass,Student
 
 class DeclareResultSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,13 +33,14 @@ class StudentMarksSerializer(serializers.Serializer):
             "total_possible": sum(subject['total_marks'] for subject in data['subjects'])
         }
 
-class ResultAddSerializer(serializers.ModelSerializer):
-    subject_code = serializers.IntegerField(write_only=True)
-    select_class_name = serializers.CharField(write_only=True)
 
+
+class SubjectResultSerializer(serializers.ModelSerializer):
+    subject_code = serializers.IntegerField(write_only=True)
+    
     class Meta:
         model = DeclareResult
-        fields = ('id', 'select_student', 'subject_code', 'select_class_name', 'marks_obtained', 'total_marks')
+        fields = ('subject_code', 'marks_obtained', 'total_marks')
 
     def validate_subject_code(self, value):
         try:
@@ -47,6 +48,11 @@ class ResultAddSerializer(serializers.ModelSerializer):
             return subject
         except Subject.DoesNotExist:
             raise serializers.ValidationError("Subject does not exist.")
+
+class ResultAddSerializer(serializers.Serializer):
+    select_student = serializers.PrimaryKeyRelatedField(queryset=Student.objects.all())
+    select_class_name = serializers.CharField()
+    results = SubjectResultSerializer(many=True)
 
     def validate_select_class_name(self, value):
         try:
@@ -56,8 +62,49 @@ class ResultAddSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Class does not exist.")
 
     def create(self, validated_data):
-        subject = validated_data.pop('subject_code')
-        select_class = validated_data.pop('select_class_name')
-        validated_data['subject'] = subject
-        validated_data['select_class'] = select_class
-        return DeclareResult.objects.create(**validated_data)
+        student = validated_data['select_student']
+        select_class = validated_data['select_class_name']
+        results_data = validated_data.pop('results')
+        
+        declare_results = []
+        for result_data in results_data:
+            subject = result_data.pop('subject_code')
+            result_data['subject'] = subject
+            result_data['select_class'] = select_class
+            result_data['select_student'] = student
+            declare_result, created = DeclareResult.objects.update_or_create(
+                select_student=student,
+                select_class=select_class,
+                subject=subject,
+                defaults=result_data
+            )
+            declare_results.append(declare_result)
+
+        return declare_results
+
+    def to_representation(self, instance):
+        if isinstance(instance, list):
+            return {
+                "select_student": instance[0].select_student.id,
+                "select_class_name": instance[0].select_class.class_name,
+                "results": [
+                    {
+                        "subject_code": result.subject.subject_code,
+                        "marks_obtained": result.marks_obtained,
+                        "total_marks": result.total_marks
+                    }
+                    for result in instance
+                ]
+            }
+        else:
+            return {
+                "select_student": instance.select_student.id,
+                "select_class_name": instance.select_class.class_name,
+                "results": [
+                    {
+                        "subject_code": instance.subject.subject_code,
+                        "marks_obtained": instance.marks_obtained,
+                        "total_marks": instance.total_marks
+                    }
+                ]
+            }
