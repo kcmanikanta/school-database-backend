@@ -2,9 +2,11 @@ from rest_framework import serializers
 from .models import DeclareResult, Subject, StudentClass,Student
 
 class DeclareResultSerializer(serializers.ModelSerializer):
+    published = serializers.BooleanField()  # Include the published field
+
     class Meta:
         model = DeclareResult
-        fields = ('id', 'select_student', 'subject', 'marks_obtained', 'total_marks')
+        fields = ('id', 'select_student', 'subject', 'marks_obtained', 'total_marks', 'published')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
