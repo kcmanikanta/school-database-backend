@@ -8,7 +8,7 @@ urlpatterns = [
     path('list/', StudentMarksView.as_view(), name='student-marks-list'),
     path('update/', ResultView.as_view(), name='update-result'),
     path('publish/', PublishResultView.as_view(), name='publish-result'),
-    path('published-results/', PublishedResultsView.as_view(), name='published-results'),  # New endpoint
+    path('published-results/', PublishedResultsView.as_view(), name='published-results'), 
 ]
 
 

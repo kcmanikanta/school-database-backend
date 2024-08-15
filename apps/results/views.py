@@ -30,7 +30,7 @@ class StudentMarksView(APIView):
             subject_marks = []
             total_obtained = 0
             total_possible = 0
-            published = True  # Assume all results are published unless one is not
+            published = True 
 
             for mark in marks:
                 subject_marks.append({
