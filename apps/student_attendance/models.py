@@ -4,21 +4,27 @@ from apps.students.models import Student
 from apps.student_classes.models import StudentClass
 
 attendance_status = (
-    ('Present', 'Present'),
-    ('Absent', 'Absent'),
-    ('Leave', 'Leave')
+    ("Present", "Present"),
+    ("Absent", "Absent"),
+    ("Leave", "Leave"),
+    ("Holiday", "Holiday"),
 )
 
+
 class StudentAttendance(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="attendance")
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name="attendance"
+    )
     student_class = models.ForeignKey(StudentClass, on_delete=models.CASCADE)
-    date = models.DateField('Date', blank=False, null=False)
-    status = models.CharField('Status', max_length=20, choices=attendance_status, default='Present')
-    remarks = models.TextField('Remarks', blank=True, null=True)
+    date = models.DateField("Date", blank=False, null=False)
+    status = models.CharField(
+        "Status", max_length=20, choices=attendance_status, default="Present"
+    )
+    remarks = models.TextField("Remarks", blank=True, null=True)
 
     class Meta:
-        unique_together = (('student', 'date'),)  
-        db_table = 'StudentAttendance'
+        unique_together = (("student", "date"),)
+        db_table = "StudentAttendance"
 
     def __str__(self):
         return f"{self.student.firstname} {self.student.lastname} - {self.date} - {self.status}"
@@ -31,20 +37,36 @@ class StudentAttendance(models.Model):
 
     def total_days_present(self):
         start_date, end_date = self.get_session_dates()
-        return self.__class__.objects.filter(student=self.student, status='Present', date__range=[start_date, end_date]).count()
+        # Include holidays as present days
+        return self.__class__.objects.filter(
+            student=self.student,
+            status__in=["Present", "Holiday"],
+            date__range=[start_date, end_date],
+        ).count()
 
     def total_days_absent(self):
         start_date, end_date = self.get_session_dates()
-        return self.__class__.objects.filter(student=self.student, status='Absent', date__range=[start_date, end_date]).count()
+        return self.__class__.objects.filter(
+            student=self.student, status="Absent", date__range=[start_date, end_date]
+        ).count()
 
     def total_days_leave(self):
         start_date, end_date = self.get_session_dates()
-        return self.__class__.objects.filter(student=self.student, status='Leave', date__range=[start_date, end_date]).count()
+        return self.__class__.objects.filter(
+            student=self.student, status="Leave", date__range=[start_date, end_date]
+        ).count()
 
     def total_days(self):
         start_date, end_date = self.get_session_dates()
         # Count the number of distinct days where attendance is recorded for this student within the session dates
-        total_days = self.__class__.objects.filter(student=self.student, date__range=[start_date, end_date]).values('date').distinct().count()
+        total_days = (
+            self.__class__.objects.filter(
+                student=self.student, date__range=[start_date, end_date]
+            )
+            .values("date")
+            .distinct()
+            .count()
+        )
         return total_days
 
     def attendance_percentage(self):
@@ -57,9 +79,9 @@ class StudentAttendance(models.Model):
 
     def attendance_summary(self):
         return {
-            'total_days_present': self.total_days_present(),
-            'total_days_absent': self.total_days_absent(),
-            'total_days_leave': self.total_days_leave(),
-            'total_days': self.total_days(),
-            'attendance_percentage': self.attendance_percentage()
+            "total_days_present": self.total_days_present(),
+            "total_days_absent": self.total_days_absent(),
+            "total_days_leave": self.total_days_leave(),
+            "total_days": self.total_days(),
+            "attendance_percentage": self.attendance_percentage(),
         }

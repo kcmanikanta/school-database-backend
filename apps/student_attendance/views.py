@@ -1,11 +1,12 @@
 from rest_framework import generics
 from .models import StudentAttendance
 from rest_framework.views import APIView
-from .serializers import StudentAttendanceSerializer,StudentAttendanceStatsSerializer,SchoolAttendanceStatsSerializer, ClassAttendanceStatsSerializer
+from .serializers import StudentAttendanceSerializer,StudentAttendanceStatsSerializer
 from django_filters import rest_framework as filters
 from rest_framework import filters as search
 from rest_framework.response import Response
-
+from datetime import datetime
+from django.db.models import Count, Q
 # Filter for attendance records
 class StudentAttendanceFilter(filters.FilterSet):
     class Meta:
@@ -45,103 +46,163 @@ class StudentAttendanceStatsList(generics.ListAPIView):
             context['attendance'] = StudentAttendance.objects.filter(student_id=student_id)
         return context
     
-    
-
-# View for overall school attendance statistics
-from rest_framework import generics
+from calendar import monthrange
+from django.db.models import Count
+from datetime import datetime
+from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import StudentAttendance, StudentClass
-from .serializers import SchoolAttendanceStatsSerializer, ClassAttendanceStatsSerializer
-from django.db import models
-from django.db.models import Count, Q
 
 class SchoolAttendanceStats(APIView):
     def get(self, request):
-        # Aggregate attendance by class
-        class_attendance = StudentAttendance.objects.values('student_class__class_name').annotate(
-            total_present=Count('id', filter=Q(status='Present')),
-            total_students=Count('student', distinct=True),
-            total_days=Count('date', distinct=True)
+        view = request.query_params.get('view', 'monthly')  
+        year = int(request.query_params.get('year', datetime.now().year))
+        month = int(request.query_params.get('month', datetime.now().month))
+        
+        total_students_by_class = StudentAttendance.objects.values('student_class__class_name').annotate(
+            total_students=Count('student', distinct=True)
         )
-        
-        total_school_days = StudentAttendance.objects.values('date').distinct().count()
-        total_students = StudentAttendance.objects.values('student').distinct().count()
-        overall_present = StudentAttendance.objects.filter(status='Present').count()
-        
-        data = []
-        for cls in class_attendance:
-            class_name = cls['student_class__class_name']
-            class_present = cls['total_present']
-            total_class_students = cls['total_students']
-            class_days = cls['total_days']
-            class_percentage = (class_present / (total_class_students * class_days)) * 100 if total_class_students * class_days > 0 else 0
+
+        if view == 'monthly':
+            total_days_monthly = monthrange(year, month)[1]
+            class_attendance_monthly = StudentAttendance.objects.filter(date__year=year, date__month=month).values('student_class__class_name').annotate(
+                total_present=Count('id', filter=Q(status__in=['Present', 'Holiday'])),
+                total_days=Count('date', distinct=True)
+            )
             
-            data.append({
-                'class_name': class_name,
-                'total_days_present': class_present,
-                'total_days': class_days,
-                'attendance_percentage': round(class_percentage, 2)
+            monthly_data = []
+            for cls in class_attendance_monthly:
+                class_name = cls['student_class__class_name']
+                class_present = cls['total_present']
+                total_students = next((item['total_students'] for item in total_students_by_class if item['student_class__class_name'] == class_name), 0)
+                class_percentage = (class_present / (total_students * total_days_monthly)) * 100 if total_students * total_days_monthly > 0 else 0
+                
+                monthly_data.append({
+                    'class_name': class_name,
+                    'total_days_present': class_present,
+                    'total_days': total_days_monthly,
+                    'attendance_percentage': round(class_percentage, 2)
+                })
+            
+            overall_present_monthly = sum(cls['total_days_present'] for cls in monthly_data)
+            overall_percentage_monthly = (overall_present_monthly / (sum(item['total_students'] for item in total_students_by_class) * total_days_monthly)) * 100 if sum(item['total_students'] for item in total_students_by_class) * total_days_monthly > 0 else 0
+
+            return Response({
+                'monthly': {
+                    'classes': monthly_data,
+                    'overall_percentage': round(overall_percentage_monthly, 2)
+                }
             })
         
-        overall_percentage = (overall_present / (total_students * total_school_days)) * 100 if total_students * total_school_days > 0 else 0
+        else:
+            total_days_yearly = (datetime(year, 12, 31) - datetime(year, 1, 1)).days + 1
+            class_attendance_yearly = StudentAttendance.objects.filter(date__year=year).values('student_class__class_name').annotate(
+                total_present=Count('id', filter=Q(status__in=['Present', 'Holiday'])),
+                total_days=Count('date', distinct=True)
+            )
+            
+            yearly_data = []
+            for cls in class_attendance_yearly:
+                class_name = cls['student_class__class_name']
+                class_present = cls['total_present']
+                total_students = next((item['total_students'] for item in total_students_by_class if item['student_class__class_name'] == class_name), 0)
+                class_percentage = (class_present / (total_students * total_days_yearly)) * 100 if total_students * total_days_yearly > 0 else 0
+                
+                yearly_data.append({
+                    'class_name': class_name,
+                    'total_days_present': class_present,
+                    'total_days': total_days_yearly,
+                    'attendance_percentage': round(class_percentage, 2)
+                })
+            
+            overall_present_yearly = sum(cls['total_days_present'] for cls in yearly_data)
+            overall_percentage_yearly = (overall_present_yearly / (sum(item['total_students'] for item in total_students_by_class) * total_days_yearly)) * 100 if sum(item['total_students'] for item in total_students_by_class) * total_days_yearly > 0 else 0
 
-        return Response({
-            'classes': data,
-            'overall_percentage': round(overall_percentage, 2)
-        })
+            return Response({
+                'yearly': {
+                    'classes': yearly_data,
+                    'overall_percentage': round(overall_percentage_yearly, 2)
+                }
+            })
+
+
 
 
 from datetime import datetime
-from rest_framework.views import APIView
+from calendar import monthrange
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from .models import StudentAttendance
-from .serializers import ClassAttendanceStatsSerializer
 
 class ClassAttendanceStats(APIView):
     def get(self, request, class_name):
-        current_year = datetime.now().year
-        current_month = datetime.now().month
-
-        class_stats = StudentAttendance.objects.filter(
+        year = int(request.query_params.get('year', datetime.now().year))
+        month = int(request.query_params.get('month', datetime.now().month))
+        
+        total_days_monthly = monthrange(year, month)[1]  # Total days in the specified month
+        class_stats_monthly = StudentAttendance.objects.filter(
             student_class__class_name=class_name,
-            date__year=current_year,
-            date__month=current_month
+            date__year=year,
+            date__month=month
+        )
+
+        total_days_present_monthly = class_stats_monthly.filter(status__in=['Present', 'Holiday']).count()
+        total_days_absent_monthly = class_stats_monthly.filter(status='Absent').count()
+        total_days_leave_monthly = class_stats_monthly.filter(status='Leave').count()
+
+        class_percentage_monthly = (total_days_present_monthly / total_days_monthly) * 100 if total_days_monthly > 0 else 0
+
+        total_days_yearly = (datetime(year, 12, 31) - datetime(year, 1, 1)).days + 1
+        class_stats_yearly = StudentAttendance.objects.filter(
+            student_class__class_name=class_name,
+            date__year=year
         )
         
-        total_days_present = class_stats.filter(status='Present').count()
-        total_days_absent = class_stats.filter(status='Absent').count()
-        total_days_leave = class_stats.filter(status='Leave').count()
-        total_days = class_stats.values('date').distinct().count()
-        total_students = class_stats.values('student').distinct().count()
+        total_days_present_yearly = class_stats_yearly.filter(status__in=['Present', 'Holiday']).count()
+        total_days_absent_yearly = class_stats_yearly.filter(status='Absent').count()
+        total_days_leave_yearly = class_stats_yearly.filter(status='Leave').count()
 
-        class_percentage = (total_days_present / (total_students * total_days)) * 100 if total_students * total_days > 0 else 0
+        class_percentage_yearly = (total_days_present_yearly / total_days_yearly) * 100 if total_days_yearly > 0 else 0
 
-        students = class_stats.values('student').distinct()
+        students = class_stats_yearly.values('student').distinct()
         student_data = []
         
         for student in students:
             student_id = student['student']
-            student_attendance = class_stats.filter(student=student_id)
-            student_present = student_attendance.filter(status='Present').count()
-            student_total_days = student_attendance.values('date').distinct().count()
-            student_percentage = (student_present / student_total_days) * 100 if student_total_days > 0 else 0
+            student_attendance_monthly = class_stats_monthly.filter(student=student_id)
+            student_present_monthly = student_attendance_monthly.filter(status__in=['Present', 'Holiday']).count()
+            
+            student_attendance_yearly = class_stats_yearly.filter(student=student_id)
+            student_present_yearly = student_attendance_yearly.filter(status__in=['Present', 'Holiday']).count()
+
+            student_percentage_monthly = (student_present_monthly / total_days_monthly) * 100 if total_days_monthly > 0 else 0
+            student_percentage_yearly = (student_present_yearly / total_days_yearly) * 100 if total_days_yearly > 0 else 0
 
             student_info = StudentAttendance.objects.filter(student_id=student_id).first().student
             student_data.append({
                 'id': student_id,
                 'firstname': student_info.firstname,
                 'lastname': student_info.lastname,
-                'attendance_percentage': round(student_percentage, 2)
+                'attendance_percentage_monthly': round(student_percentage_monthly, 1),
+                'attendance_percentage_yearly': round(student_percentage_yearly, 1)
             })
 
         response_data = {
             'class_name': class_name,
-            'total_days_present': total_days_present,
-            'total_days_absent': total_days_absent,
-            'total_days_leave': total_days_leave,
-            'total_days': total_days,
-            'attendance_percentage': round(class_percentage, 2),
+            'monthly': {
+                'total_days_present': total_days_present_monthly,
+                'total_days_absent': total_days_absent_monthly,
+                'total_days_leave': total_days_leave_monthly,
+                'total_days': total_days_monthly,
+                'attendance_percentage': round(class_percentage_monthly, 1),
+            },
+            'yearly': {
+                'total_days_present': total_days_present_yearly,
+                'total_days_absent': total_days_absent_yearly,
+                'total_days_leave': total_days_leave_yearly,
+                'total_days': total_days_yearly,
+                'attendance_percentage': round(class_percentage_yearly, 1),
+            },
             'students': student_data
         }
         

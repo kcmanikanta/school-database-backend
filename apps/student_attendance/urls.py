@@ -4,7 +4,7 @@ from .views import (
     StudentAttendanceAdd, 
     StudentAttendanceStatsList,
     SchoolAttendanceStats,
-    ClassAttendanceStats
+    ClassAttendanceStats,
 )
 
 urlpatterns = [
@@ -14,3 +14,4 @@ urlpatterns = [
     path('school-stats/', SchoolAttendanceStats.as_view(), name='school-attendance-stats'),
     path('class-stats/<str:class_name>/', ClassAttendanceStats.as_view(), name='class-attendance-stats'),
 ]
+

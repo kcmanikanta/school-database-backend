@@ -98,5 +98,19 @@ class ClassAttendanceStatsSerializer(serializers.Serializer):
     total_days = serializers.IntegerField()
     attendance_percentage = serializers.FloatField()
     students = serializers.ListSerializer(child=StudentSerializer(), allow_empty=True)
+    
+class MonthlyAttendanceStatsSerializer(serializers.Serializer):
+    total_days_present = serializers.IntegerField()
+    total_days_absent = serializers.IntegerField()
+    total_days_leave = serializers.IntegerField()
+    total_days = serializers.IntegerField()
+    attendance_percentage = serializers.FloatField()
+
+class YearlyAttendanceStatsSerializer(serializers.Serializer):
+    total_days_present = serializers.IntegerField()
+    total_days_absent = serializers.IntegerField()
+    total_days_leave = serializers.IntegerField()
+    total_days = serializers.IntegerField()
+    attendance_percentage = serializers.FloatField()
 
 
