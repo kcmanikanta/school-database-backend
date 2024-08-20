@@ -21,6 +21,8 @@ class StudentAddSerializer(serializers.ModelSerializer):
                 print('No admission form found for email:', email)
         
         return super().create(validated_data)
+    
+
 class StudentListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
