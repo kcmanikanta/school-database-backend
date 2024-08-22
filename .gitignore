@@ -22,7 +22,6 @@ __pycache__/
 *.sqlite3
 
 # Ignore the database file
-db.sqlite3
 db.json
 
 # Ignore the local .env file
