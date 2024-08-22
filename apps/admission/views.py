@@ -23,6 +23,11 @@ class AdmissionFormView(generics.CreateAPIView):
     queryset = Admission_form.objects.all()
     serializer_class = AdmissionFormSerializer
 
+    def create(self, request, *args, **kwargs):
+        print("Request data:", request.data)
+        return super().create(request, *args, **kwargs)
+
+
 
 class AdmissionListView(generics.ListAPIView):
     queryset = Admission_form.objects.all()
