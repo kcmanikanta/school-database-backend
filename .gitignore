@@ -1,0 +1,91 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.env
+*.DS_Store
+*.pdf
+*.pyo
+*.pyd
+*.sqlite3
+
+# Ignore the database file
+db.sqlite3
+
+# Ignore the local .env file
+.env
+
+# Ignore the entire virtual environment directory
+venv/
+env/
+ENV/
+
+# Ignore the node_modules directory
+node_modules/
+
+# Ignore the migrations directory (optional)
+**/migrations/
+
+# Ignore the compiled assets (optional)
+staticfiles/
+static/
+
+# Ignore the media files
+media/
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+
+# Ignore macOS specific files
+.DS_Store
+
+# Ignore Python egg files
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+
+# Ignore compiled C files
+*.o
+*.a
+*.dylib
+*.lib
+*.dll
+
+# Ignore coverage reports
+htmlcov/
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Ignore test and cache files
+test/
+tests/
+.cache/
+*.bak
+*.swp
+
+# Ignore Cloudinary upload temp files
+cloudinary_temp/
+
+# Ignore security and authentication files
+*.pem
+*.key
