@@ -1,91 +1,26 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# C extensions
-*.so
-
-# Django stuff:
+# Logs
+logs
 *.log
-*.pot
-*.pyc
-*.pyo
-*.pyd
-*.db
-*.sqlite3
-*.env
-*.DS_Store
-*.pdf
-*.pyo
-*.pyd
-*.sqlite3
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Ignore the database file
-db.sqlite3
+node_modules
+dist
+dist-ssr
+*.local
 
-# Ignore the local .env file
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
 .env
-
-# Ignore the entire virtual environment directory
-venv/
-env/
-ENV/
-
-# Ignore the node_modules directory
-node_modules/
-
-# Ignore the migrations directory (optional)
-**/migrations/
-
-# Ignore the compiled assets (optional)
-staticfiles/
-static/
-
-# Ignore the media files
-media/
-
-# Ignore IDE specific files
-.vscode/
-.idea/
-
-# Ignore macOS specific files
 .DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# Ignore Python egg files
-*.egg
-*.egg-info/
-dist/
-build/
-eggs/
-
-# Ignore compiled C files
-*.o
-*.a
-*.dylib
-*.lib
-*.dll
-
-# Ignore coverage reports
-htmlcov/
-.tox/
-.coverage
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-
-# Ignore test and cache files
-test/
-tests/
-.cache/
-*.bak
-*.swp
-
-# Ignore Cloudinary upload temp files
-cloudinary_temp/
-
-# Ignore security and authentication files
-*.pem
-*.key
