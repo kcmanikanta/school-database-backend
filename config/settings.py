@@ -96,11 +96,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'd8v897r21uclm6',
-#         'USER': 'ykjyligysrycpd',
-#         'HOST': 'ec2-3-209-61-239.compute-1.amazonaws.com',
-#         'PORT': 5432,
-#         'PASSWORD': 'b30a8552696219463bd405108f6f3465b2aeb7e84fef15a4f9ab7114f5925bf8',
+#         'NAME': 'defaultdb',
+#         'USER': 'avnadmin',
+#         'HOST': 'pg-ac27cf4-sajidkhurshidbhat-8322.h.aivencloud.com',
+#         'PORT': 28773,
+#         'PASSWORD': 'AVNS_daLnv7yS6IuL9EbIid4',
 #     }
 # }
 
