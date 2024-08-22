@@ -100,7 +100,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 #         'USER': 'avnadmin',
 #         'HOST': 'pg-ac27cf4-sajidkhurshidbhat-8322.h.aivencloud.com',
 #         'PORT': 28773,
-#         'PASSWORD': 'AVNS_daLnv7yS6IuL9EbIid4',
+#         'PASSWORD': '0000',
 #     }
 # }
 
