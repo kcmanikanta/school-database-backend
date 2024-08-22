@@ -23,6 +23,7 @@ __pycache__/
 
 # Ignore the database file
 db.sqlite3
+db.json
 
 # Ignore the local .env file
 .env
@@ -51,6 +52,7 @@ media/
 
 # Ignore macOS specific files
 .DS_Store
+
 
 # Ignore Python egg files
 *.egg
