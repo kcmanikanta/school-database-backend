@@ -31,6 +31,7 @@ class AdmissionFormSerializer(serializers.ModelSerializer):
 
 
 
+
 class AdmissionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Admission_form
