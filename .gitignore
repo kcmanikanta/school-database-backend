@@ -13,16 +13,12 @@ __pycache__/
 *.pyo
 *.pyd
 *.db
-*.sqlite3
 *.env
 *.DS_Store
 *.pdf
 *.pyo
 *.pyd
-*.sqlite3
 
-# Ignore the database file
-db.json
 
 # Ignore the local .env file
 .env
