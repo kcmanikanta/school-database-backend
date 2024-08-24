@@ -15,10 +15,12 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 from os import getenv
+import os
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -48,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apps.users', 
     'cloudinary',
+    'cloudinary_storage',
     'django_filters',
     "apps.attendance",
     'apps.admission',
@@ -55,7 +58,8 @@ INSTALLED_APPS = [
     'apps.students',
     'apps.student_classes',
     'apps.subjects',
-    'apps.student_attendance'
+    'apps.student_attendance',
+    'apps.dob_record'
 ]
 
 MIDDLEWARE = [
@@ -171,6 +175,8 @@ cloudinary.config(
   api_key = "482644941478895", 
   api_secret = "P59cUQUPZohjRtasaz0R3gL0w-s" 
 )
+
+
 
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']

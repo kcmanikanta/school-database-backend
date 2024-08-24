@@ -50,49 +50,21 @@ class StudentUpdate(generics.UpdateAPIView):
     serializer_class = StudentListSerializer
     
     
-from rest_framework import generics, status
-from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer
-from .models import Student
-from .serializers import StudentAddSerializer
-
 class AdminStudentAddView(generics.CreateAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentAddSerializer
 
     def post(self, request, *args, **kwargs):
-        # Check if the request data is a list (for multiple students)
-        if isinstance(request.data, list):
-            students = request.data
-        else:
-            students = [request.data]  # Make it a list if it's a single object
-
-        created_students = []
-        errors = []
+        roll = request.data.get('student_roll')
+        if roll:
+            if Student.objects.filter(student_roll=roll).exists():
+                response = Response(
+                    {'error': 'Student with this Roll Number already exists'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                response.accepted_renderer = JSONRenderer()
+                response.accepted_media_type = "application/json"
+                response.renderer_context = {}
+                return response
         
-        for student_data in students:
-            roll = student_data.get('student_roll')
-            if roll and Student.objects.filter(student_roll=roll).exists():
-                errors.append({'student_roll': roll, 'error': 'Student with this Roll Number already exists'})
-                continue
-
-            serializer = self.get_serializer(data=student_data)
-            if serializer.is_valid():
-                serializer.save()
-                created_students.append(serializer.data)
-            else:
-                errors.append({'student_roll': roll, 'error': serializer.errors})
-
-        if errors:
-            response_data = {'created': created_students, 'errors': errors}
-            status_code = status.HTTP_400_BAD_REQUEST if len(errors) == len(students) else status.HTTP_207_MULTI_STATUS
-        else:
-            response_data = {'created': created_students}
-            status_code = status.HTTP_201_CREATED
-
-        response = Response(response_data, status=status_code)
-        response.accepted_renderer = JSONRenderer()
-        response.accepted_media_type = "application/json"
-        response.renderer_context = {}
-        return response
-
+        return self.create(request, *args, **kwargs)

@@ -21,7 +21,7 @@ class Student(models.Model):
     class Meta:
      db_table = 'Students'
     student_roll = models.IntegerField(unique=True,blank=False,null=False)
-    udise_code = models.IntegerField('UDISE_CODE', blank=True, null=True)
+    udise_code = models.CharField('UDISE_CODE', blank=True, null=True,max_length=50)
     title = models.CharField('title', max_length=20, choices=title)
     firstname = models.CharField('First Name',max_length=100,  db_index=True, blank=False, null = False )
     lastname = models.CharField('Last Name',max_length=100,  db_index=True, blank=False, null = False )
@@ -33,7 +33,7 @@ class Student(models.Model):
     mother = models.CharField('Mother Name',max_length=100, db_index=True, blank=True, null = True )
     gaurdian = models.CharField('Gaurdian Name',max_length=100, db_index=True, blank=True, null = True )
     domicile = models.IntegerField('Domicile Number', blank = True, null = True)
-    bank= models.IntegerField('Bank Account',null=True,blank=True)
+    bank= models.CharField('Bank Account',null=True,blank=True,max_length=30)
     photograph = CloudinaryField(
         'Photo', blank = True, null = True
     )
