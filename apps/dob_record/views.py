@@ -19,31 +19,24 @@ class PDFRecordCreateView(generics.CreateAPIView):
     serializer_class = PDFRecordSerializer
 
     def create(self, request, *args, **kwargs):
-        # Create a PDFRecord instance first
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         pdf_record = serializer.instance
 
-        # Retrieve the PDF file
         pdf_file = request.FILES.get('pdf_file')
         if pdf_file:
             try:
-                # Convert PDF to images
                 images = convert_from_bytes(pdf_file.read())
                 image_urls = []
                 for image in images:
-                    # Save image to a bytes buffer
                     buffer = io.BytesIO()
                     image.save(buffer, format="PNG")
                     buffer.seek(0)
-
-                    # Upload image to Cloudinary
                     response = cloudinary.uploader.upload(buffer, folder="pdf_images")
                     image_urls.append(response['url'])
 
-                # Update the PDFRecord with image URLs
-                pdf_record.image_url = image_urls[0]  # You can choose how to handle multiple images
+                pdf_record.image_url = image_urls[0]  # Save the first image's URL
                 pdf_record.save()
 
                 return Response(PDFRecordSerializer(pdf_record).data, status=status.HTTP_201_CREATED)
