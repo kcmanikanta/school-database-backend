@@ -13,6 +13,7 @@ urlpatterns = [
     path('subject/', include('apps.subjects.urls')),
     path('student-attendance/', include('apps.student_attendance.urls')),
     path('dob-record/', include('apps.dob_record.urls')),
+    path('blogs/', include('apps.teacher_blogs.urls')),
 ]
 
 if settings.DEBUG:

@@ -33,8 +33,15 @@ SECRET_KEY = 'django-insecure-ov#r^^&xv&^0vmc(zj&h_t^$*52@8jicn=%*z*@s-=li!s_p@=
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOWED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://frontend-electric-views.herokuapp.com']
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000','http://localhost:5173', 'https://frontend-electric-views.herokuapp.com']
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:5173',  # Add this line
+    'https://frontend-electric-views.herokuapp.com',
+]
+
 
 # Application definition
 
@@ -59,7 +66,8 @@ INSTALLED_APPS = [
     'apps.student_classes',
     'apps.subjects',
     'apps.student_attendance',
-    'apps.dob_record'
+    'apps.dob_record',
+    'apps.teacher_blogs'
 ]
 
 MIDDLEWARE = [
@@ -100,29 +108,29 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # load_dotenv()
 
-# DATABASES = {
-#   'default': {
-#     'ENGINE': 'django.db.backends.postgresql',
-#     'NAME': getenv('PGDATABASE'),
-#     'USER': getenv('PGUSER'),
-#     'PASSWORD': getenv('PGPASSWORD'),
-#     'HOST': getenv('PGHOST'),
-#     'PORT': getenv('PGPORT',28773),
-#     'OPTIONS': {
-#       'sslmode': 'require',
-#     },
-#   }
-# }
+DATABASES = {
+  'default': {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': getenv('PGDATABASE'),
+    'USER': getenv('PGUSER'),
+    'PASSWORD': getenv('PGPASSWORD'),
+    'HOST': getenv('PGHOST'),
+    'PORT': getenv('PGPORT',28773),
+    'OPTIONS': {
+      'sslmode': 'require',
+    },
+  }
+}
 
 
 
 # Local Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 
@@ -181,4 +189,12 @@ cloudinary.config(
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+}
+
 
