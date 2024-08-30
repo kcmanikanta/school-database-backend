@@ -14,23 +14,26 @@ class StudentMarksView(APIView):
     def get(self, request):
         students = Student.objects.all()
 
-        # Filtering logic
         student_name = request.query_params.get('name', None)
         student_roll = request.query_params.get('roll', None)
+        year = request.query_params.get('year', None)
 
         if student_name:
             students = students.filter(
                 firstname__icontains=student_name) | students.filter(lastname__icontains=student_name)
         if student_roll:
             students = students.filter(student_roll=student_roll)
+        
+        # Filter results by year if provided
+        results = DeclareResult.objects.filter(year=year) if year else DeclareResult.objects.all()
 
         data = []
         for student in students:
-            marks = DeclareResult.objects.filter(select_student=student)
+            marks = results.filter(select_student=student)
             subject_marks = []
             total_obtained = 0
             total_possible = 0
-            published = True 
+            published = True
 
             for mark in marks:
                 subject_marks.append({
@@ -41,7 +44,6 @@ class StudentMarksView(APIView):
                 total_obtained += mark.marks_obtained if mark.marks_obtained is not None else 0
                 total_possible += mark.total_marks if mark.total_marks is not None else 0
 
-                # Update published status based on result's status
                 if not mark.published:
                     published = False
 
@@ -50,12 +52,41 @@ class StudentMarksView(APIView):
                     "id": student.id,
                     "name": student.firstname + ' ' + student.lastname,
                     "Admission No": student.student_roll,
-                    "class": student.student_class.class_name,
+                    "class": mark.select_class.class_name,  
                     "subjects": subject_marks,
                     "total_obtained": total_obtained,
                     "total_possible": total_possible,
-                    "published": published  # Include published status
+                    "published": published,
+                    "year": year if year else (marks[0].year if marks.exists() else None),
                 })
+        return Response(data, status=status.HTTP_200_OK)
+
+class PublishedResultsView(APIView):
+    def get(self, request):
+        year = request.query_params.get('year', None)
+
+        if year:
+            published_results = DeclareResult.objects.filter(published=True, year=year)
+        else:
+            published_results = DeclareResult.objects.filter(published=True)
+
+        if not published_results.exists():
+            return Response({"error": "No published results found."}, status=status.HTTP_404_NOT_FOUND)
+
+        data = []
+        for result in published_results:
+            student = result.select_student
+            data.append({
+                "id": student.id,
+                "name": student.firstname + ' ' + student.lastname,
+                "Admission No": student.student_roll,
+                "class": student.student_class.class_name,
+                "subject": result.subject.subject_name,
+                "marks_obtained": result.marks_obtained,
+                "total_marks": result.total_marks,
+                "published": result.published
+            })
+        
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -97,28 +128,5 @@ class PublishResultView(APIView):
         }, status=status.HTTP_200_OK)
 
 
-class PublishedResultsView(APIView):
-    def get(self, request):
-        # Fetch only the results that have been published
-        published_results = DeclareResult.objects.filter(published=True)
 
-        if not published_results.exists():
-            return Response({"error": "No published results found."}, status=status.HTTP_404_NOT_FOUND)
-
-        # Serialize the results
-        data = []
-        for result in published_results:
-            student = result.select_student
-            data.append({
-                "id": student.id,
-                "name": student.firstname + ' ' + student.lastname,
-                "Admission No": student.student_roll,
-                "class": student.student_class.class_name,
-                "subject": result.subject.subject_name,
-                "marks_obtained": result.marks_obtained,
-                "total_marks": result.total_marks,
-                "published": result.published
-            })
-        
-        return Response(data, status=status.HTTP_200_OK)
 

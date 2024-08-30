@@ -2,16 +2,18 @@ from rest_framework import serializers
 from .models import DeclareResult, Subject, StudentClass,Student
 
 class DeclareResultSerializer(serializers.ModelSerializer):
-    published = serializers.BooleanField()  # Include the published field
+    published = serializers.BooleanField()
+    year = serializers.IntegerField()  # Include the year field
 
     class Meta:
         model = DeclareResult
-        fields = ('id', 'select_student', 'subject', 'marks_obtained', 'total_marks', 'published')
+        fields = ('id', 'select_student', 'subject', 'marks_obtained', 'total_marks', 'published', 'year')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['subject'] = instance.subject.subject_code
         return representation
+
 
 class StudentMarksSerializer(serializers.Serializer):
     name = serializers.CharField()
@@ -54,6 +56,7 @@ class SubjectResultSerializer(serializers.ModelSerializer):
 class ResultAddSerializer(serializers.Serializer):
     select_student = serializers.PrimaryKeyRelatedField(queryset=Student.objects.all())
     select_class_name = serializers.CharField()
+    year = serializers.IntegerField()  # New field for the year
     results = SubjectResultSerializer(many=True)
 
     def validate_select_class_name(self, value):
@@ -66,6 +69,7 @@ class ResultAddSerializer(serializers.Serializer):
     def create(self, validated_data):
         student = validated_data['select_student']
         select_class = validated_data['select_class_name']
+        year = validated_data['year']
         results_data = validated_data.pop('results')
         
         declare_results = []
@@ -74,10 +78,12 @@ class ResultAddSerializer(serializers.Serializer):
             result_data['subject'] = subject
             result_data['select_class'] = select_class
             result_data['select_student'] = student
+            result_data['year'] = year
             declare_result, created = DeclareResult.objects.update_or_create(
                 select_student=student,
                 select_class=select_class,
                 subject=subject,
+                year=year,
                 defaults=result_data
             )
             declare_results.append(declare_result)
@@ -89,6 +95,7 @@ class ResultAddSerializer(serializers.Serializer):
             return {
                 "select_student": instance[0].select_student.id,
                 "select_class_name": instance[0].select_class.class_name,
+                "year": instance[0].year,
                 "results": [
                     {
                         "subject_code": result.subject.subject_code,
@@ -102,6 +109,7 @@ class ResultAddSerializer(serializers.Serializer):
             return {
                 "select_student": instance.select_student.id,
                 "select_class_name": instance.select_class.class_name,
+                "year": instance.year,
                 "results": [
                     {
                         "subject_code": instance.subject.subject_code,
