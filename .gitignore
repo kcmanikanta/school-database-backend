@@ -23,8 +23,7 @@ __pycache__/
 # Ignore the local .env file
 .env
 
-# Ignore SQLite database file
-db.sqlite3
+
 
 # Ignore the entire virtual environment directory
 venv/
