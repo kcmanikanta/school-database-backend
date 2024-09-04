@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-ov#r^^&xv&^0vmc(zj&h_t^$*52@8jicn=%*z*@s-=li!s_p@=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['http://localhost:3000', 'http://127.0.0.1:3000','http://localhost:5173', 'https://gmsk.netlify.app/','13.233.6.149']
+ALLOWED_HOSTS = ['http://localhost:3000', 'http://127.0.0.1:3000','http://localhost:5173', 'https://gmsk.netlify.app/','43.204.232.251']
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000','http://localhost:5173', 'https://gmsk.netlify.app/']
 
