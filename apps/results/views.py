@@ -61,10 +61,6 @@ class StudentMarksView(APIView):
                 })
         return Response(data, status=status.HTTP_200_OK)
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from django.http import JsonResponse
-
 class PublishedResultsView(APIView):
     def get(self, request):
         year = request.query_params.get('year', None)
@@ -75,7 +71,7 @@ class PublishedResultsView(APIView):
             published_results = DeclareResult.objects.filter(published=True)
 
         if not published_results.exists():
-            return JsonResponse({"error": "No published results found."}, status=404)
+            return Response({"error": "No published results found."}, status=status.HTTP_404_NOT_FOUND)
 
         data = []
         for result in published_results:
@@ -91,10 +87,7 @@ class PublishedResultsView(APIView):
                 "published": result.published
             })
         
-        response = JsonResponse(data, status=200, safe=False)
-        response["Access-Control-Allow-Origin"] = "*"
-        return response
-
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class ResultView(APIView):
