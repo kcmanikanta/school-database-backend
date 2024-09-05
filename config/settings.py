@@ -34,7 +34,10 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = ['https://gmsk.netlify.app', 'http://localhost:3000']
+CORS_ALLOWED_ORIGINS = ['https://gmsk.netlify.app/', 'http://localhost:3000','http://localhost:5173']
+CORS_ALLOW_CREDENTIALS = True
+CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
+
 
 
 
