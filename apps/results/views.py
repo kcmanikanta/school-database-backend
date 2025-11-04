@@ -80,7 +80,7 @@ class PublishedResultsView(APIView):
                 "id": student.id,
                 "name": student.firstname + ' ' + student.lastname,
                 "Admission No": student.student_roll,
-                "class": student.student_class.class_name,
+                "class": result.select_class.class_name,
                 "subject": result.subject.subject_name,
                 "marks_obtained": result.marks_obtained,
                 "total_marks": result.total_marks,
@@ -126,7 +126,3 @@ class PublishResultView(APIView):
             "message": "Results published successfully.",
             "published": True
         }, status=status.HTTP_200_OK)
-
-
-
-
